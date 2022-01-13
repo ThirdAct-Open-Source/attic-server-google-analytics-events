@@ -59,7 +59,7 @@ export class AtticServerGoogleAnalyticsEvents implements IPlugin {
             });
 
             await new Promise<void>((resolve, reject) => {
-                setTimeout(() => resolve(), 1e3)
+                setTimeout(() => resolve(), 2.5e3)
             });
 
             const resp: any = await page.evaluate((args: any) => {
@@ -68,7 +68,7 @@ export class AtticServerGoogleAnalyticsEvents implements IPlugin {
             }, args);
 
             await new Promise<void>((resolve, reject) => {
-                setTimeout(() => resolve(), 1e3)
+                setTimeout(() => resolve(), 2.5e3)
             });
 
         } catch (e) { E = e; } finally {
