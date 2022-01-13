@@ -1,6 +1,6 @@
 {
     "name": "@thirdact/attic-server-google-analytics-events",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "",
     "main": "lib/Atticfile.js",
     "scripts": {

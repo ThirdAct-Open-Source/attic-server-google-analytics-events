@@ -34,42 +34,57 @@ export class AtticServerGoogleAnalyticsEvents implements IPlugin {
     public get config(): AtticUAConfigType { return this.applicationContext.config as AtticUAConfigType; }
 
     public async gtag(opts: GAOptions, ...args: any[]): Promise<unknown> {
-        const  page = await this.browser.newPage();
-        await page.goto(opts.pageUrl);
-        const  ua = opts.uaTrackingCode || this.uaEventsTrackingCode;
-        await page.addScriptTag({
-            url: 'https://www.googletagmanager.com/gtag/js?id='+(
-                ua
-            )
-        });
-        await page.addScriptTag({
-           content: `
+        let resp: any;
+        let E: any;
+        let page: any;
+        let browser: any;
+        try {
+             browser = await require('playwright').chromium.launch({headless: true});
+             page = await browser.newPage();
+            await page.goto(opts.pageUrl);
+            const ua = opts.uaTrackingCode || this.uaEventsTrackingCode;
+            await page.addScriptTag({
+                url: 'https://www.googletagmanager.com/gtag/js?id=' + (
+                    ua
+                )
+            });
+            await page.addScriptTag({
+                content: `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
     
               gtag('config', '${ua}');
             `
-        });
+            });
 
-        await new Promise<void>((resolve, reject) => { setTimeout(() => resolve(), 1e3) });
+            await new Promise<void>((resolve, reject) => {
+                setTimeout(() => resolve(), 1e3)
+            });
 
-        const resp: any = await page.evaluate((args: any) => {
-            // @ts-ignore
-            return gtag.apply(void(0), args);
-        }, args);
+            const resp: any = await page.evaluate((args: any) => {
+                // @ts-ignore
+                return gtag.apply(void (0), args);
+            }, args);
 
-        await new Promise<void>((resolve, reject) => { setTimeout(() => resolve(), 1e3) });
+            await new Promise<void>((resolve, reject) => {
+                setTimeout(() => resolve(), 1e3)
+            });
 
-        return resp;
+        } catch (e) { E = e; } finally {
+            page && await page.close();
+            browser && await browser.close()
+
+            if (E) throw E;
+
+            return resp;
+        }
     }
 
     browser: any;
 
     public async init(): Promise<void> {
       const ctx = this.applicationContext;
-      this.browser = await require('playwright').chromium.launch({ headless: true });
-
       ctx.gtag = ctx.rpcServer.methods.gtag = this.gtag;
     }
 
