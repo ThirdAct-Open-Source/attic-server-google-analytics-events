@@ -68,7 +68,7 @@ export class AtticServerGoogleAnalyticsEvents implements IPlugin {
 
     public async init(): Promise<void> {
       const ctx = this.applicationContext;
-      this.browser = await require('playwright').chromium.launch({ headless: false });
+      this.browser = await require('playwright').chromium.launch({ headless: true });
 
       ctx.gtag = ctx.rpcServer.methods.gtag = this.gtag;
     }
